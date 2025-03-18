@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-q64sk#8_f9l1arav^9c=a7ua6vg&p2*f)p!^x)hvvrrkr9a4j4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS определяет список хостов/доменов, с которых приложение может принимать запросы
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
