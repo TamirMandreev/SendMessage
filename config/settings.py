@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+# os - стандартная библиотека Python для работы с операционной системой, в частности для получения значений переменных окружения
+import os
+# load_dotenv - функция, которая загружает переменные из файла .env в окружение
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,10 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY используется для шифрования сессий пользователей, паролей и токенов CSRF
-SECRET_KEY = 'django-insecure-q64sk#8_f9l1arav^9c=a7ua6vg&p2*f)p!^x)hvvrrkr9a4j4'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 # ALLOWED_HOSTS определяет список хостов/доменов, с которых приложение может принимать запросы
 ALLOWED_HOSTS = ['*']
@@ -79,11 +86,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sendmessage',
-        'USER': 'tamir',
-        'PASSWORD': '14032712',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('NAME'),
+        'USER': os.getenv('USER'),
+        'PASSWORD': os.getenv('PASSWORD'),
+        'HOST': os.getenv('HOST'),
+        'PORT': os.getenv('PORT'),
     }
 }
 
