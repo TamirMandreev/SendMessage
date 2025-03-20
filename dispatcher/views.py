@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView
 
 from dispatcher.models import Recipient
 
@@ -14,3 +14,10 @@ class RecipientListView(ListView):
     model = Recipient
     template_name = 'dispatcher/recipients_list.html'
     context_object_name = 'recipients'
+
+# class RecipientCreateView(CreateView):
+#     '''
+#     Представление для создания получателей рассылки (клиентов)
+#     '''
+#     model = Recipient
+#     form_class = RecipientForm
