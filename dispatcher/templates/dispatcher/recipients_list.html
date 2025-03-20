@@ -1,6 +1,15 @@
 {% extends 'dispatcher/base.html' %}
 
+{% block title %}<title>Список клиентов</title>{% endblock %}
+
 {% block content %}
+<div class="row mb-3">
+    <div class="col-2">
+        <a class="btn btn-outline-primary" href="{% url 'dispatcher:recipient_create' %}" role="button">Добавить клиента</a>
+    </div>
+</div>
+
+
 <table class="table table-hover">
     <thead>
     <tr>
@@ -8,6 +17,7 @@
         <th scope="col">Email</th>
         <th scope="col">Ф.И.О.</th>
         <th scope="col">Комментарий</th>
+        <th scope="col">Действия</th>
     </tr>
     </thead>
     <tbody>
@@ -17,6 +27,10 @@
         <td>{{ recipient.email }}</td>
         <td>{{ recipient.full_name }}</td>
         <td>{{ recipient.comment }}</td>
+        <td>
+            <a href="{% url 'dispatcher:recipient_update' recipient.pk %}">Изменить</a>
+            <a class="text-danger" href="{% url 'dispatcher:recipient_delete' recipient.pk  %}">Удалить</a>
+        </td>
     </tr>
     {% endfor %}
     </tbody>
