@@ -10,7 +10,7 @@
 </div>
 
 
-<table class="table table-hover">
+<table class="table table-hover align-middle">
     <thead>
     <tr>
         <th scope="col">#</th>
@@ -26,7 +26,7 @@
         <th scope="row">{{ forloop.counter }}</th>
         <td>{{ recipient.email }}</td>
         <td>{{ recipient.full_name }}</td>
-        <td>{{ recipient.comment }}</td>
+        <td class="text-break">{{ recipient.comment | truncatechars:500 }}</td>
         <td>
             <a href="{% url 'dispatcher:recipient_update' recipient.pk %}">Изменить</a>
             <a class="text-danger" href="{% url 'dispatcher:recipient_delete' recipient.pk  %}">Удалить</a>
