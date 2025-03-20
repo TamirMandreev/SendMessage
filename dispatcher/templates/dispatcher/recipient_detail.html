@@ -3,17 +3,10 @@
 {% block title %}<title>Список клиентов</title>{% endblock %}
 
 {% block content %}
-<div class="row mb-3">
-    <div class="col-2">
-        <a class="btn btn-outline-primary" href="{% url 'dispatcher:recipient_create' %}" role="button">Добавить клиента</a>
-    </div>
-</div>
-
-
 <table class="table table-hover align-middle">
     <thead>
     <tr>
-        <th scope="col">#</th>
+
         <th scope="col">Email</th>
         <th scope="col">Ф.И.О.</th>
         <th scope="col">Комментарий</th>
@@ -21,19 +14,16 @@
     </tr>
     </thead>
     <tbody>
-    {% for recipient in recipients %}
     <tr>
-        <th scope="row">{{ forloop.counter }}</th>
         <td>{{ recipient.email }}</td>
         <td>{{ recipient.full_name }}</td>
-        <td class="text-break">{{ recipient.comment | truncatechars:500 }}</td>
+        <td class="text-break">{{ recipient.comment }}</td>
         <td>
             <a href="{% url 'dispatcher:recipient_update' recipient.pk %}">Изменить</a>
             <a href="{% url 'dispatcher:recipient_detail' recipient.pk %}">Подробнее</a>
             <a class="text-danger" href="{% url 'dispatcher:recipient_delete' recipient.pk  %}">Удалить</a>
         </td>
     </tr>
-    {% endfor %}
     </tbody>
 </table>
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from dispatcher.forms import RecipientForm
 from dispatcher.models import Recipient
@@ -36,6 +36,16 @@ class RecipientUpdateView(UpdateView):
     form_class = RecipientForm
     template_name = 'dispatcher/recipient_form.html'
     success_url = reverse_lazy('dispatcher:recipients_list')
+
+
+class RecipientDetailView(DetailView):
+    '''
+    Представление для просмотра детальной информации о получателе рассылки (клиенте)
+    '''
+    model = Recipient
+    template_name = 'dispatcher/recipient_detail.html'
+    context_object_name = 'recipient'
+
 
 
 class RecipientDeleteView(DeleteView):
