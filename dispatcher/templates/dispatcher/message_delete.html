@@ -1,0 +1,14 @@
+{% extends 'dispatcher/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Удалить объект Message</h1>
+    <p>Вы уверены, что хотите удалить сообщение?</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'dispatcher:recipients_list' %}">Отмена</a>
+    </form>
+</div>
+{% endblock %}

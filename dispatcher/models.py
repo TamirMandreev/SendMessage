@@ -25,4 +25,23 @@ class Recipient(models.Model):
         db_table = 'Получатели рассылки'
 
 
+# 2. Управление сообщениями
+class Message(models.Model):
+    '''
+    Модель сообщение
 
+    Представляет сообщение для клиента. Содержит тему письма и тело письма.
+    '''
+    theme = models.CharField(max_length=200, verbose_name='Тема')
+    body = models.TextField(verbose_name='Сообщение')
+
+# 3. Управление рассылками
+class Mailing(models.Model):
+    '''
+    Модель рассылки
+
+    Представляет рассылку для клиента. Содержит дату и время первой отправки,
+    дату и время окончания отправки, статус, сообщение и получатели
+    '''
+    date_time_of_first_mailing = models.DateTimeField(null=True, blank=True)
+    date_time_end_mailing = models.DateField(null=True, blank=True)

@@ -1,0 +1,33 @@
+{% extends 'dispatcher/base.html' %}
+
+{% block title %}<title>Сообщение</title>{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-2">
+        <a class="btn btn-outline-primary" href="{% url 'dispatcher:message_create' %}" role="button">Добавить сообщение</a>
+    </div>
+</div>
+
+
+<table class="table table-hover align-middle">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Тема</th>
+        <th scope="col">Тело</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ message.theme }}</td>
+        <td class="text-break">{{ message.body }}</td>
+        <td>
+            <a href="{% url 'dispatcher:message_update' message.pk %}">Изменить</a>
+            <a class="text-danger" href="{% url 'dispatcher:message_delete' message.pk  %}">Удалить</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}
