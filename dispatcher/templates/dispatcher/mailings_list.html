@@ -28,9 +28,9 @@
         <th scope="row">{{ forloop.counter }}</th>
         <td>{{ mailing.date_time_of_first_mailing }}</td>
         <td>{{ mailing.date_time_end_mailing }}</td>
-        <td>{{ mailing.status }}</td>
+        <td>{{ mailing.get_status_display }}</td>
         <td>{{ mailing.message }}</td>
-        <td>{{ mailing.recipients }}</td>
+        <td>{{ mailing.get_recipients }}</td>
         <td>
             <a href="{% url 'dispatcher:mailing_update' mailing.pk %}">Изменить</a>
             <a href="{% url 'dispatcher:mailing_detail' mailing.pk %}">Подробнее</a>
