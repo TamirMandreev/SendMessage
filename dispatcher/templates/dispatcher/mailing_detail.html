@@ -1,0 +1,40 @@
+{% extends 'dispatcher/base.html' %}
+
+{% block title %}<title>Рассылка</title>{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-2">
+        <a class="btn btn-outline-primary" href="{% url 'dispatcher:mailing_create' %}" role="button">Добавить рассылку</a>
+    </div>
+</div>
+
+
+<table class="table table-hover align-middle">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Дата и время первой отправки</th>
+        <th scope="col">Дата и время окончания отправки</th>
+        <th scope="col">Статус</th>
+        <th scope="col">Сообщение</th>
+        <th scope="col">Получатели</th>
+        <th scope="col">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ mailing.date_time_of_first_mailing }}</td>
+        <td>{{ mailing.date_time_end_mailing }}</td>
+        <td>{{ mailing.status }}</td>
+        <td>{{ mailing.message }}</td>
+        <td>{{ mailing.recipients }}</td>
+        <td>
+            <a href="{% url 'dispatcher:mailing_update' mailing.pk %}">Изменить</a>
+            <a class="text-danger" href="{% url 'dispatcher:mailing_delete' mailing.pk  %}">Удалить</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}

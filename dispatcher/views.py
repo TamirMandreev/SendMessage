@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
-from dispatcher.forms import RecipientForm, MessageForm
-from dispatcher.models import Recipient, Message
+from dispatcher.forms import RecipientForm, MessageForm, MailingForm
+from dispatcher.models import Recipient, Message, Mailing
 
 
 # Create your views here.
@@ -105,3 +105,49 @@ class MessageDeleteView(DeleteView):
     success_url = reverse_lazy('dispatcher:messages_list')
 
 
+# 3. Управление рассылками
+class MailingCreateView(CreateView):
+    '''
+    Представление для создания рассылки
+    '''
+    model = Mailing
+    form_class = MailingForm
+    template_name = 'dispatcher/mailing_form.html'
+    success_url = reverse_lazy('dispatcher:mailings_list')
+
+
+class MailingListView(ListView):
+    '''
+    Представление для отображения всех рассылок
+    '''
+    model = Mailing
+    template_name = 'dispatcher/mailings_list.html'
+    context_object_name = 'mailings'
+
+
+class MailingDetailView(DetailView):
+    '''
+    Представление для отображения подробной информации о рассылке
+    '''
+    model = Mailing
+    template_name = 'dispatcher/mailing_detail.html'
+    context_object_name = 'mailing'
+
+
+class MailingUpdateView(UpdateView):
+    '''
+    Представление для редактирования рассылки
+    '''
+    model = Mailing
+    form_class = MailingForm
+    template_name = 'dispatcher/mailing_form.html'
+    success_url = reverse_lazy('dispatcher:mailings_list')
+
+
+class MailingDeleteView(DeleteView):
+    '''
+    Представление для удаления рассылки
+    '''
+    model = Mailing
+    template_name = 'dispatcher/mailing_delete.html'
+    success_url = reverse_lazy('dispatcher:mailings_list')

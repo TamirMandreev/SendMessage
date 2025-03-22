@@ -43,5 +43,21 @@ class Mailing(models.Model):
     Представляет рассылку для клиента. Содержит дату и время первой отправки,
     дату и время окончания отправки, статус, сообщение и получатели
     '''
+    CREATED = '1' # Рассылка была создана, но еще ни разу не была отправлена
+    LAUNCHED = '2' # Рассылка активна и была отправлена хотя бы один раз
+    COMPLETED = '3' # Время окончания отправки рассылки прошло
+
     date_time_of_first_mailing = models.DateTimeField(null=True, blank=True)
     date_time_end_mailing = models.DateField(null=True, blank=True)
+
+    STATUS_CHOICES = [
+        (CREATED, 'Создана'),
+        (LAUNCHED, 'Активна'),
+        (COMPLETED, 'Завершена')
+    ]
+    status = models.CharField(max_length=6, choices=STATUS_CHOICES, default=CREATED, verbose_name='Статус')
+
+    message = models.ForeignKey(Message, on_delete=models.SET_NULL, related_name='mailings', null=True, blank=True)
+    recipients = models.ManyToManyField(Recipient, related_name='recipients')
+
+

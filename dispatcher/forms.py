@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from dispatcher.models import Recipient, Message
+from dispatcher.models import Recipient, Message, Mailing
 
 
 class RecipientForm(ModelForm):
@@ -23,3 +23,14 @@ class MessageForm(ModelForm):
         super(MessageForm, self).__init__(*args, **kwargs)
         self.fields['theme'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Введите тему'})
         self.fields['body'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Сообщение'})
+
+
+class MailingForm(ModelForm):
+    class Meta:
+        model = Mailing
+        exclude = ['date_time_of_first_mailing', 'date_time_end_mailing', 'status']
+
+    def __init__(self, *args, **kwargs):
+        super(MailingForm, self).__init__(*args, **kwargs)
+        self.fields['message'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Сообщение'})
+        self.fields['recipients'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Получатели'})
