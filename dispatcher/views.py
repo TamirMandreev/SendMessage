@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 
 from config.settings import EMAIL_HOST_USER
 from django.shortcuts import render
@@ -179,7 +178,7 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         mailing.status = mailing.LAUNCHED
         # Записать дату и время первой отправки
         if not mailing.date_time_of_first_mailing:
-            mailing.date_time_of_first_mailing = datetime.now()
+            mailing.date_time_of_first_mailing = timezone.now()
         # Сохранить изменения в базу данных
         mailing.save()
 
@@ -193,7 +192,9 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         )
 
         # Записать дату и время окончания отправки
-        mailing.date_time_end_mailing = datetime.now()
+        mailing.date_time_end_mailing = timezone.now()
+        # Обновить статус рассылки
+        mailing.status = mailing.COMPLETED
         # Сохранить изменения
         mailing.save()
 
