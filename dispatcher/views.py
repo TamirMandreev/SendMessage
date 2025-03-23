@@ -1,6 +1,12 @@
+from datetime import datetime
+
+from django.http import HttpResponseRedirect
+
+from config.settings import EMAIL_HOST_USER
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
+from django.views.generic.detail import SingleObjectMixin
 
 from dispatcher.forms import RecipientForm, MessageForm, MailingForm
 from dispatcher.models import Recipient, Message, Mailing
@@ -151,3 +157,45 @@ class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = 'dispatcher/mailing_delete.html'
     success_url = reverse_lazy('dispatcher:mailings_list')
+
+
+# SingleIbjectMixin позволяет получать объект модели по идентификатору (id)
+class MailingStartView(TemplateView, SingleObjectMixin):
+    '''
+    Представление для обработки POST-запроса на запуск рассылки
+    '''
+    # Указать модель, с которой будет работать представление
+    model = Mailing
+    # Указать имя аргумента URL, который содержит первичный ключ объекта
+    pk_url_kwarg = 'pk'
+    template_name = 'dispatcher/mailing_detail.html'
+    context_object_name = 'mailing'
+
+    # Метод post обрабатывает POST-запросы. Он вызывается, когда форма отправляется методом POST
+    def post(self, request, *args, **kwargs):
+        # Получить объект модели Mailing по переданному id
+        mailing = self.get_object()
+        # Обновить статус рассылки
+        mailing.status = mailing.LAUNCHED
+        # Записать дату и время первой отправки
+        if not mailing.date_time_of_first_mailing:
+            mailing.date_time_of_first_mailing = datetime.now()
+        # Сохранить изменения в базу данных
+        mailing.save()
+
+        from django.core.mail import send_mail
+        # Отправить сообщения
+        send_mail(
+            subject=mailing.message.theme, # Тема письма
+            message=mailing.message.body, # Тело письма
+            from_email=EMAIL_HOST_USER, # Адрес отправителя
+            recipient_list=mailing.get_recipients_for_mailing() # Список получателей
+        )
+
+        # Записать дату и время окончания отправки
+        mailing.date_time_end_mailing = datetime.now()
+        # Сохранить изменения
+        mailing.save()
+
+        # После успешной отправки письма перенаправить пользователя обратно на страницу подробной информации о рассылке
+        return HttpResponseRedirect(reverse_lazy('dispatcher:mailing_detail', kwargs={'pk': mailing.pk}))

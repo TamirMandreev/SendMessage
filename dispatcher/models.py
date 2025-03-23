@@ -58,7 +58,7 @@ class Mailing(models.Model):
     COMPLETED = '3' # Время окончания отправки рассылки прошло
 
     date_time_of_first_mailing = models.DateTimeField(null=True, blank=True, verbose_name='Дата и время первой отправки')
-    date_time_end_mailing = models.DateField(null=True, blank=True, verbose_name='Дата и время окончания отправки')
+    date_time_end_mailing = models.DateTimeField(null=True, blank=True, verbose_name='Дата и время окончания отправки')
 
     STATUS_CHOICES = [
         (CREATED, 'Создана'),
@@ -72,6 +72,9 @@ class Mailing(models.Model):
 
     def get_recipients(self):
         return ', '.join([recipient.email for recipient in self.recipients.all()])
+
+    def get_recipients_for_mailing(self):
+        return [recipient.email for recipient in self.recipients.all()]
 
     class Meta:
         verbose_name = 'Рассылка'
