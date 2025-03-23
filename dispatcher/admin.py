@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from dispatcher.models import Recipient, Message, Mailing
+from dispatcher.models import Recipient, Message, Mailing, AttemptToMailing
 
 @admin.register(Recipient)
 class RecipientAdmin(admin.ModelAdmin):
@@ -17,3 +17,8 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
     list_display = ('status', 'message',)
+
+
+@admin.register(AttemptToMailing)
+class AttemptToMailingAdmin(admin.ModelAdmin):
+    list_display = ('date_time_of_attempt', 'status', 'mail_server_response', 'mailing')

@@ -82,4 +82,34 @@ class Mailing(models.Model):
         db_table = 'Рассылки'
 
 
+# Создать модель "Попытка рассылки"
+class AttemptToMailing(models.Model):
+    '''
+    Модель "Попытка рассылки"
+
+    Хранит информацию о каждой попытке рассылки. Содержит дату и время попытки,
+    Статус "Успешно" или "Не успешно", Ответ почтового сервера, Внешний ключ на модель "Рассылка"
+    '''
+
+    # Дата и время попытки
+    date_time_of_attempt = models.DateTimeField(null=True, blank=True, verbose_name='Дата и время попытки')
+    # Статус
+    status = models.CharField(max_length=6, choices=[('1', 'Успешно'), ('0', 'Не успешно')], verbose_name='Статус', null=True, blank=True)
+    # Ответ почтового сервера
+    mail_server_response = models.TextField(verbose_name='Ответ почтового сервера', null=True, blank=True)
+    # Рассылка
+    mailing = models.ForeignKey(Mailing, on_delete=models.SET_NULL, verbose_name='Рассылка', related_name='attempts', null=True, blank=True)
+
+    def get_statistics(self):
+        # Общее количество попыток
+        number_of_attempts = AttemptToMailing.objects.count()
+        # Количество успешных попыток
+        success_attempts = AttemptToMailing.objects.filter(status='1').count()
+        # Количество неуспешных попыток
+        unsuccess_attempts = AttemptToMailing.objects.filter(status='0').count()
+
+        return (f'Общее количество попыток: {number_of_attempts}\n'
+                f'Количество успешных попыток: {success_attempts}\n'
+                f'Количество неуспешных попыток: {unsuccess_attempts}')
+
 

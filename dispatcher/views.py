@@ -8,7 +8,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.views.generic.detail import SingleObjectMixin
 
 from dispatcher.forms import RecipientForm, MessageForm, MailingForm
-from dispatcher.models import Recipient, Message, Mailing
+from dispatcher.models import Recipient, Message, Mailing, AttemptToMailing
 
 
 # Create your views here.
@@ -182,14 +182,28 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         # Сохранить изменения в базу данных
         mailing.save()
 
+        # Создать объект модели AttemptToMailing
+        attempt = AttemptToMailing.objects.create(date_time_of_attempt=timezone.now(), mailing=mailing)
+
         from django.core.mail import send_mail
-        # Отправить сообщения
-        send_mail(
-            subject=mailing.message.theme, # Тема письма
-            message=mailing.message.body, # Тело письма
-            from_email=EMAIL_HOST_USER, # Адрес отправителя
-            recipient_list=mailing.get_recipients_for_mailing() # Список получателей
-        )
+        try:
+            # Отправить сообщения
+            send_mail(
+                subject=mailing.message.theme, # Тема письма
+                message=mailing.message.body, # Тело письма
+                from_email=EMAIL_HOST_USER, # Адрес отправителя
+                recipient_list=mailing.get_recipients_for_mailing() # Список получателей
+            )
+            # Установить статус отправки "Успешно"
+            attempt.status = '1'
+        except Exception as e:
+            # Установить статус отправки "Не успешно"
+            attempt.status = '0'
+            # Записать информацию об ошибке в "Ответ почтового сервера"
+            attempt.mail_server_response = e
+
+        # Сохранить attempt
+        attempt.save()
 
         # Записать дату и время окончания отправки
         mailing.date_time_end_mailing = timezone.now()
