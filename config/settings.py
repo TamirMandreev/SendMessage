@@ -146,3 +146,7 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Параметр AUTH_USER_MODEL указывает на модель пользователя, которую
+# django будет использовать вместо стандартной модели django.contrib.auth.models.User
+AUTH_USER_MODEL = 'users.User'
