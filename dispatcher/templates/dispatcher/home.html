@@ -1,0 +1,25 @@
+{% extends 'dispatcher/base.html' %}
+
+{% block title %}<title>Рассылка</title>{% endblock %}
+
+{% block content %}
+
+<table class="table table-hover align-middle">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Количество всех рассылок</th>
+        <th scope="col">Количество активных рассылок</th>
+        <th scope="col">Количество уникальных получателей</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ number_of_mailings }}</td>
+        <td>{{ number_of_active_mailings }}</td>
+        <td>{{ number_of_unique_recipient }}</td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}

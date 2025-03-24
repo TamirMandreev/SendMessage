@@ -214,3 +214,27 @@ class MailingStartView(TemplateView, SingleObjectMixin):
 
         # После успешной отправки письма перенаправить пользователя обратно на страницу подробной информации о рассылке
         return HttpResponseRedirect(reverse_lazy('dispatcher:mailing_detail', kwargs={'pk': mailing.pk}))
+
+
+# 4. Домашняя страница
+class Home(TemplateView):
+    model = Mailing
+    template_name = 'dispatcher/home.html'
+    context_object_name = 'mailings'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Количество всех рассылок
+        number_of_mailings = Mailing.objects.all().count()
+        # Количество активных рассылок
+        number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED).count()
+        # Количество уникальных получателей
+        number_of_unique_recipient = Recipient.objects.all().distinct().count()
+
+        context['number_of_mailings'] = number_of_mailings
+        context['number_of_active_mailings'] = number_of_active_mailings
+        context['number_of_unique_recipient'] = number_of_unique_recipient
+
+        return context
+
