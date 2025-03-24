@@ -3,12 +3,13 @@ from django.urls import path
 
 from users import views
 from users.apps import UsersConfig
+from users.forms import UserAuthForm
 
 # Задать имя приложения в пространстве имен (namespace)
 app_name = UsersConfig.name
 
 urlpatterns = [
     path('register/', views.UserCreateView.as_view(), name='register'),
-    path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('login/', LoginView.as_view(template_name='users/login.html', authentication_form=UserAuthForm), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
 ]

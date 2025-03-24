@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from users.models import User
 
@@ -16,3 +16,12 @@ class UserRegisterForm(UserCreationForm):
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Введите email'})
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Введите пароль'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Повторите пароль'})
+
+
+# Стилизовать форму аутентификации пользователя
+class UserAuthForm(AuthenticationForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserAuthForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Введите email'})
+        self.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Введите пароль'})
