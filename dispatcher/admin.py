@@ -21,4 +21,4 @@ class MailingAdmin(admin.ModelAdmin):
 
 @admin.register(AttemptToMailing)
 class AttemptToMailingAdmin(admin.ModelAdmin):
-    list_display = ('date_time_of_attempt', 'status', 'mail_server_response', 'mailing')
+    list_display = ('date_time_of_attempt', 'status', 'mail_server_response', 'mailing', 'messages_count')

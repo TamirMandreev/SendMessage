@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 
@@ -172,6 +173,9 @@ class MailingStartView(TemplateView, SingleObjectMixin):
 
     # Метод post обрабатывает POST-запросы. Он вызывается, когда форма отправляется методом POST
     def post(self, request, *args, **kwargs):
+        # Создать переменную для хранения количества успешных отправок
+        sent_count = 0
+
         # Получить объект модели Mailing по переданному id
         mailing = self.get_object()
         # Обновить статус рассылки
@@ -185,23 +189,29 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         # Создать объект модели AttemptToMailing
         attempt = AttemptToMailing.objects.create(date_time_of_attempt=timezone.now(), mailing=mailing)
 
-        from django.core.mail import send_mail
-        try:
-            # Отправить сообщения
-            send_mail(
-                subject=mailing.message.theme, # Тема письма
-                message=mailing.message.body, # Тело письма
-                from_email=EMAIL_HOST_USER, # Адрес отправителя
-                recipient_list=mailing.get_recipients_for_mailing() # Список получателей
-            )
-            # Установить статус отправки "Успешно"
-            attempt.status = '1'
-        except Exception as e:
-            # Установить статус отправки "Не успешно"
-            attempt.status = '0'
-            # Записать информацию об ошибке в "Ответ почтового сервера"
-            attempt.mail_server_response = e
+        for email in mailing.get_recipients_for_mailing():
+            try:
+                # Отправить сообщения
+                send_mail(
+                    subject=mailing.message.theme, # Тема письма
+                    message=mailing.message.body, # Тело письма
+                    from_email=EMAIL_HOST_USER, # Адрес отправителя
+                    recipient_list=[email] # Email получателя
+                )
+                # Установить статус отправки "Успешно"
+                attempt.status = '1'
+                # Увеличить счетчик успешных отправок
+                sent_count += 1
 
+
+            except Exception as e:
+                # Установить статус отправки "Не успешно"
+                attempt.status = '0'
+                # Записать информацию об ошибке в "Ответ почтового сервера"
+                attempt.mail_server_response = e
+
+        # Записать количество отправленных сообщений
+        attempt.messages_count += sent_count
         # Сохранить attempt
         attempt.save()
 
@@ -209,6 +219,7 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         mailing.date_time_end_mailing = timezone.now()
         # Обновить статус рассылки
         mailing.status = mailing.COMPLETED
+
         # Сохранить изменения
         mailing.save()
 
@@ -231,10 +242,22 @@ class Home(TemplateView):
         number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED).count()
         # Количество уникальных получателей
         number_of_unique_recipient = Recipient.objects.all().distinct().count()
+        # Общее количество попыток рассылок
+        number_of_attempts = AttemptToMailing.get_number_of_attempts()
+        # Количество успешных попыток
+        success_attempts = AttemptToMailing.get_success_attempts()
+        # Количество неуспешных попыток
+        unsuccess_attempts = AttemptToMailing.get_unsuccess_attempts()
+        # Количество отправленных сообщений
+        number_of_messages = AttemptToMailing.get_messages_count()
 
         context['number_of_mailings'] = number_of_mailings
         context['number_of_active_mailings'] = number_of_active_mailings
         context['number_of_unique_recipient'] = number_of_unique_recipient
+        context['number_of_attempts'] = number_of_attempts
+        context['success_attempts'] = success_attempts
+        context['unsuccess_attempts'] = unsuccess_attempts
+        context['number_of_messages'] = number_of_messages
 
         return context
 

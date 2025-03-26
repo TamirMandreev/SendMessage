@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Sum
+
 
 # Create your models here.
 
@@ -100,16 +102,24 @@ class AttemptToMailing(models.Model):
     # Рассылка
     mailing = models.ForeignKey(Mailing, on_delete=models.SET_NULL, verbose_name='Рассылка', related_name='attempts', null=True, blank=True)
 
-    def get_statistics(self):
-        # Общее количество попыток
-        number_of_attempts = AttemptToMailing.objects.count()
-        # Количество успешных попыток
-        success_attempts = AttemptToMailing.objects.filter(status='1').count()
-        # Количество неуспешных попыток
-        unsuccess_attempts = AttemptToMailing.objects.filter(status='0').count()
+    # Счетчик отправленных сообщений
+    messages_count = models.PositiveIntegerField(null=True, blank=True, default=0)
 
-        return (f'Общее количество попыток: {number_of_attempts}\n'
-                f'Количество успешных попыток: {success_attempts}\n'
-                f'Количество неуспешных попыток: {unsuccess_attempts}')
+    # Получить общее количество попыток рассылок
+    @classmethod
+    def get_number_of_attempts(self):
+        return AttemptToMailing.objects.count()
 
+    # Получить количество успешных попыток
+    @classmethod
+    def get_success_attempts(self):
+        return AttemptToMailing.objects.filter(status='1').count()
 
+    # Получить количество неуспешных попыток
+    @classmethod
+    def get_unsuccess_attempts(self):
+        return AttemptToMailing.objects.filter(status='0').count()
+
+    @classmethod
+    def get_messages_count(self):
+        return AttemptToMailing.objects.aggregate(total=Sum('messages_count'))['total']
