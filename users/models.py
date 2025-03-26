@@ -9,6 +9,9 @@ class User(AbstractUser):
     username = None
     # Использовать email как уникальный идентификатор
     email = models.EmailField(unique=True, verbose_name="Email")
+    # Токен нужен для подтверждения учетной записи по электронной почте
+    token = models.CharField(max_length=100, verbose_name="Token", blank=True, null=True)
+    reset_token = models.CharField(max_length=100, verbose_name="Reset Token", blank=True, null=True)
 
     # Определить поле email как поле для авторизации
     USERNAME_FIELD = 'email'

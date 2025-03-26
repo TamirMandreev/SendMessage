@@ -150,3 +150,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Параметр AUTH_USER_MODEL указывает на модель пользователя, которую
 # django будет использовать вместо стандартной модели django.contrib.auth.models.User
 AUTH_USER_MODEL = 'users.User'
+
+# URL-адреса, на которые пользователь будет перенаправляться после успешной аутентификации или выхода из учетной записи
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
