@@ -30,6 +30,11 @@ class Recipient(models.Model):
         ordering = ['email']
         db_table = 'Получатели рассылки'
 
+        # Кастомные разрешения
+        permissions = [
+            ('can_view_all_clients', 'Can view all clients'), # Может просматривать всех клиентов
+        ]
+
 
 # 2. Управление сообщениями
 class Message(models.Model):
@@ -90,6 +95,12 @@ class Mailing(models.Model):
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
         db_table = 'Рассылки'
+
+        # Кастомные разрешения
+        permissions = [
+            ('can_disable_mailings', 'Can disable mailings'), # Может отключить рассылки
+            ('can_view_all_mailings', 'Can view all mailings'), # Может просматривать все рассылки
+        ]
 
 
 # Создать модель "Попытка рассылки"

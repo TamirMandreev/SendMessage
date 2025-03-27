@@ -26,6 +26,12 @@ class User(AbstractUser):
         # Человеко-понятное название модели во множественном числе
         verbose_name_plural = 'Пользователи'
 
+        # Кастомные разрешения
+        permissions = [
+            ('can_view_all_users', 'Can view all users'), # Может просматривать всех пользователей
+            ('can_block_users', 'Can block users'), # Может блокировать пользователей
+        ]
+
     # Переопределить метод __str__
     def __str__(self):
         return self.email
