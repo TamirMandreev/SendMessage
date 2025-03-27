@@ -19,6 +19,9 @@ urlpatterns = [
     path('password-reset-request/', views.PasswordResetRequestView.as_view(), name='password_reset_request'),
     path('password_reset_confirm/', views.PasswordResetView.as_view(), name='password_reset_confirm'),
 
+    path('list/', views.UsersListView.as_view(), name='users_list'),
+    path('block/<int:pk>', views.block_user, name='user_block'),
+
 
 ]
 

@@ -32,9 +32,11 @@
         <td>{{ mailing.message }}</td>
         <td>{{ mailing.get_recipients }}</td>
         <td>
+            {% if user.is_authenticated %}
             <a href="{% url 'dispatcher:mailing_update' mailing.pk %}">Изменить</a>
             <a href="{% url 'dispatcher:mailing_detail' mailing.pk %}">Подробнее</a>
             <a class="text-danger" href="{% url 'dispatcher:mailing_delete' mailing.pk  %}">Удалить</a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}

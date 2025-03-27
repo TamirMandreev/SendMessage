@@ -2,11 +2,13 @@ import secrets
 
 from django.contrib.auth import login
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, FormView
+from django.views.generic import CreateView, FormView, ListView
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm
@@ -156,3 +158,38 @@ class PasswordResetView(FormView):
         login(self.request, self.user)
         # Вызвать родительский метод
         return super().form_valid(form)
+
+
+# Создать представление для просмотра списка пользователей
+class UsersListView(LoginRequiredMixin, ListView):
+    # Указать модель, с которой будет работать представление
+    model = User
+    # Указать шаблон, который будет использоваться для отображения списка пользователей
+    template_name = 'users/users_list.html'
+    # Задать имя переменной, под которой список объектов будет доступен в шаблоне
+    context_object_name = 'users'
+
+    # Настроить запрос получения списка пользователей к базе данных
+    def get_queryset(self):
+        # Получить пользователя, который отправляет запрос
+        user = self.request.user
+        # Если у пользователя нет права can_view_all_users
+        if not user.has_perm('user.can_view_all_users'):
+            return HttpResponseForbidden('У вас нет права на просмотр списка пользователей')
+
+        return User.objects.all()
+
+# Создать представление для блокировки пользователя
+def block_user(request, pk):
+    # Получить пользователя
+    user = get_object_or_404(User, pk=pk)
+    # Если пользователь имеет право can_block_users
+    if user.has_perm('user.can_block_users'):
+        # Установить поле is_active=False
+        user.is_active = False
+        # Сохранить пользователя
+        user.save()
+        return HttpResponse('Пользователь заблокирован')
+    else:
+        return HttpResponse('У вас нет права на блокировку пользователя')
+

@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
@@ -6,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 
 from config.settings import EMAIL_HOST_USER
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
@@ -27,12 +29,20 @@ class RecipientListView(ListView):
     context_object_name = 'recipients'
 
     # Настроить запрос к базе данных, который будет фильтровать список получетелй рассылок по полю owner модели Recipient
+    # Если у пользователя есть право просматривать всех получателей рассылки, то возвращать всех получателей рассылки
     def get_queryset(self):
-        # Получаем текущего пользователя
-        user = self.request.user
-        # Фильтруем queryset по полю owner
-        queryset = super().get_queryset()
-        return queryset.filter(owner=user)
+        try:
+            # Получаем текущего пользователя
+            user = self.request.user
+            # Если у пользователя есть право can_view_all_clients
+            if user.has_perm('dispatcher.can_view_all_clients'):
+                return super().get_queryset()
+            else:
+                # Фильтруем queryset по полю owner
+                queryset = super().get_queryset()
+                return queryset.filter(owner=user)
+        except Exception:
+            return redirect(reverse_lazy('users:login'))
 
 
 class RecipientCreateView(CreateView):
@@ -53,7 +63,7 @@ class RecipientCreateView(CreateView):
         return super().form_valid(form)
 
 
-class RecipientUpdateView(UpdateView):
+class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     '''
     Представление для редактирования получателя рассылки (клиента)
     '''
@@ -190,12 +200,20 @@ class MailingListView(ListView):
     context_object_name = 'mailings'
 
     # Настроить запрос к базе данных, который будет фильтровать список рассылок по полю owner модели Mailing
+    # Если у пользователя есть право просматривать все рассылки, возвращать все рассылки
     def get_queryset(self):
-        # Получаем текущего пользователя
-        user = self.request.user
-        # Фильтруем queryset по полю owner
-        queryset = super().get_queryset()
-        return queryset.filter(owner=user)
+        try:
+            # Получаем текущего пользователя
+            user = self.request.user
+            # Если у пользователя есть право can_view_all_mailings
+            if user.has_perm('dispatcher.can_view_all_mailings'):
+                return super().get_queryset()
+            else:
+                # Фильтруем queryset по полю owner
+                queryset = super().get_queryset()
+                return queryset.filter(owner=user)
+        except TypeError:
+            return redirect(reverse_lazy('users:login'))
 
 
 
@@ -327,28 +345,32 @@ class Home(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Количество всех рассылок
-        number_of_mailings = Mailing.objects.all().filter(owner=self.request.user).count()
-        # Количество активных рассылок
-        number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED, owner=self.request.user).count()
-        # Количество уникальных получателей
-        number_of_unique_recipient = Recipient.objects.all().distinct().filter(owner=self.request.user).count()
-        # Общее количество попыток рассылок
-        number_of_attempts = AttemptToMailing.objects.filter(owner=self.request.user).count()
-        # Количество успешных попыток
-        success_attempts = AttemptToMailing.objects.filter(owner=self.request.user, status='1').count()
-        # Количество неуспешных попыток
-        unsuccess_attempts = AttemptToMailing.objects.filter(owner=self.request.user, status='0').count()
-        # Количество отправленных сообщений
-        number_of_messages = AttemptToMailing.objects.filter(owner=self.request.user).aggregate(total=Sum('messages_count'))['total']
+        try:
+            # Количество всех рассылок
+            number_of_mailings = Mailing.objects.all().filter(owner=self.request.user).count()
+            # Количество активных рассылок
+            number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED, owner=self.request.user).count()
+            # Количество уникальных получателей
+            number_of_unique_recipient = Recipient.objects.all().distinct().filter(owner=self.request.user).count()
+            # Общее количество попыток рассылок
+            number_of_attempts = AttemptToMailing.objects.filter(owner=self.request.user).count()
+            # Количество успешных попыток
+            success_attempts = AttemptToMailing.objects.filter(owner=self.request.user, status='1').count()
+            # Количество неуспешных попыток
+            unsuccess_attempts = AttemptToMailing.objects.filter(owner=self.request.user, status='0').count()
+            # Количество отправленных сообщений
+            number_of_messages = AttemptToMailing.objects.filter(owner=self.request.user).aggregate(total=Sum('messages_count'))['total']
 
-        context['number_of_mailings'] = number_of_mailings
-        context['number_of_active_mailings'] = number_of_active_mailings
-        context['number_of_unique_recipient'] = number_of_unique_recipient
-        context['number_of_attempts'] = number_of_attempts
-        context['success_attempts'] = success_attempts
-        context['unsuccess_attempts'] = unsuccess_attempts
-        context['number_of_messages'] = number_of_messages
+            context['number_of_mailings'] = number_of_mailings
+            context['number_of_active_mailings'] = number_of_active_mailings
+            context['number_of_unique_recipient'] = number_of_unique_recipient
+            context['number_of_attempts'] = number_of_attempts
+            context['success_attempts'] = success_attempts
+            context['unsuccess_attempts'] = unsuccess_attempts
+            context['number_of_messages'] = number_of_messages
 
-        return context
+            return context
+
+        except TypeError:
+            redirect(reverse_lazy('users:login'))
 
