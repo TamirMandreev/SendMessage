@@ -113,21 +113,4 @@ class AttemptToMailing(models.Model):
     # Счетчик отправленных сообщений
     messages_count = models.PositiveIntegerField(null=True, blank=True, default=0)
 
-    # Получить общее количество попыток рассылок
-    @classmethod
-    def get_number_of_attempts(self):
-        return AttemptToMailing.objects.count()
-
-    # Получить количество успешных попыток
-    @classmethod
-    def get_success_attempts(self):
-        return AttemptToMailing.objects.filter(status='1').count()
-
-    # Получить количество неуспешных попыток
-    @classmethod
-    def get_unsuccess_attempts(self):
-        return AttemptToMailing.objects.filter(status='0').count()
-
-    @classmethod
-    def get_messages_count(self):
-        return AttemptToMailing.objects.aggregate(total=Sum('messages_count'))['total']
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='attempts', null=True, blank=True)

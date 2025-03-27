@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 
@@ -277,7 +278,7 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         mailing.save()
 
         # Создать объект модели AttemptToMailing
-        attempt = AttemptToMailing.objects.create(date_time_of_attempt=timezone.now(), mailing=mailing)
+        attempt = AttemptToMailing.objects.create(date_time_of_attempt=timezone.now(), mailing=mailing, owner=self.request.user)
 
         for email in mailing.get_recipients_for_mailing():
             try:
@@ -327,19 +328,19 @@ class Home(TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Количество всех рассылок
-        number_of_mailings = Mailing.objects.all().count()
+        number_of_mailings = Mailing.objects.all().filter(owner=self.request.user).count()
         # Количество активных рассылок
-        number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED).count()
+        number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED, owner=self.request.user).count()
         # Количество уникальных получателей
-        number_of_unique_recipient = Recipient.objects.all().distinct().count()
+        number_of_unique_recipient = Recipient.objects.all().distinct().filter(owner=self.request.user).count()
         # Общее количество попыток рассылок
-        number_of_attempts = AttemptToMailing.get_number_of_attempts()
+        number_of_attempts = AttemptToMailing.objects.filter(owner=self.request.user).count()
         # Количество успешных попыток
-        success_attempts = AttemptToMailing.get_success_attempts()
+        success_attempts = AttemptToMailing.objects.filter(owner=self.request.user, status='1').count()
         # Количество неуспешных попыток
-        unsuccess_attempts = AttemptToMailing.get_unsuccess_attempts()
+        unsuccess_attempts = AttemptToMailing.objects.filter(owner=self.request.user, status='0').count()
         # Количество отправленных сообщений
-        number_of_messages = AttemptToMailing.get_messages_count()
+        number_of_messages = AttemptToMailing.objects.filter(owner=self.request.user).aggregate(total=Sum('messages_count'))['total']
 
         context['number_of_mailings'] = number_of_mailings
         context['number_of_active_mailings'] = number_of_active_mailings
@@ -351,30 +352,3 @@ class Home(TemplateView):
 
         return context
 
-# 5. Просмотр статистики
-class StatisticsView(TemplateView):
-    model = Mailing
-    template_name = 'dispatcher/statistics.html'
-    context_object_name = 'mailings'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        user = self.request.user
-
-        # Количество всех рассылок, принадлежащих пользователю
-        number_of_mailings = Mailing.objects.filter(owner=user).count()
-        # Количество активных рассылок
-        number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED, owner=user).count()
-        # Количество уникальных получателей
-        number_of_unique_recipient = Recipient.objects.filter(owner=user).distinct().count()
-        # Общее количество попыток рассылок
-        number_of_attempts = AttemptToMailing.get_number_of_attempts()
-        # Количество успешных попыток
-        success_attempts = AttemptToMailing.get_success_attempts()
-        # Количество неуспешных попыток
-        unsuccess_attempts = AttemptToMailing.get_unsuccess_attempts()
-        # Количество отправленных сообщений
-        number_of_messages = AttemptToMailing.get_messages_count()
-
-        return context
