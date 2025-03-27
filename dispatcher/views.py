@@ -25,6 +25,14 @@ class RecipientListView(ListView):
     template_name = 'dispatcher/recipients_list.html'
     context_object_name = 'recipients'
 
+    # Настроить запрос к базе данных, который будет фильтровать список получетелй рассылок по полю owner модели Recipient
+    def get_queryset(self):
+        # Получаем текущего пользователя
+        user = self.request.user
+        # Фильтруем queryset по полю owner
+        queryset = super().get_queryset()
+        return queryset.filter(owner=user)
+
 
 class RecipientCreateView(CreateView):
     '''
@@ -34,6 +42,14 @@ class RecipientCreateView(CreateView):
     form_class = RecipientForm
     template_name = 'dispatcher/recipient_form.html'
     success_url = reverse_lazy('dispatcher:recipients_list')
+
+    # Метод form_valid вызывается после успешной проверки формы
+    # Этот метод используется для выполнения каких-либо действий перед сохранением формы
+    def form_valid(self, form):
+        # Установить значение поля owner
+        form.instance.owner = self.request.user
+        # Вызвать родительский метод
+        return super().form_valid(form)
 
 
 class RecipientUpdateView(UpdateView):
@@ -45,6 +61,13 @@ class RecipientUpdateView(UpdateView):
     template_name = 'dispatcher/recipient_form.html'
     success_url = reverse_lazy('dispatcher:recipients_list')
 
+    def get_object(self, queryset=None):
+        object = super().get_object(queryset)
+        if object.owner == self.request.user:
+            return object
+        else:
+            return PermissionDenied('У вас нет прав на редактирование этого получателя рассылки')
+
 
 class RecipientDetailView(DetailView):
     '''
@@ -53,6 +76,13 @@ class RecipientDetailView(DetailView):
     model = Recipient
     template_name = 'dispatcher/recipient_detail.html'
     context_object_name = 'recipient'
+
+    def get_object(self, queryset=None):
+        object = super().get_object(queryset)
+        if object.owner == self.request.user:
+            return object
+        else:
+            return PermissionDenied('У вас нет прав на просмотр этого получателя рассылки')
 
 
 
@@ -63,6 +93,13 @@ class RecipientDeleteView(DeleteView):
     model = Recipient
     template_name = 'dispatcher/recipient_delete.html'
     success_url = reverse_lazy('dispatcher:recipients_list')
+
+    def get_object(self, queryset=None):
+        object = super().get_object(queryset)
+        if object.owner == self.request.user:
+            return object
+        else:
+            return PermissionDenied('У вас нет прав на удаление этого получателя рассылки')
 
 
 # 2. Управление сообщениями
@@ -75,6 +112,16 @@ class MessageCreateView(CreateView):
     form_class = MessageForm
     template_name = 'dispatcher/message_form.html'
     success_url = reverse_lazy('dispatcher:messages_list')
+
+    # Метод form_valid вызывается после успешной проверки формы
+    # Этот метод используется для выполнения каких-либо действий перед сохранением формы
+    def form_valid(self, form):
+        # Установить значение поля owner
+        form.instance.owner = self.request.user
+        # Вызвать родительский метод
+        return super().form_valid(form)
+
+
 
 
 class MessageListView(ListView):
@@ -160,6 +207,13 @@ class MailingDetailView(DetailView):
     template_name = 'dispatcher/mailing_detail.html'
     context_object_name = 'mailing'
 
+    def get_object(self, queryset=None):
+        object = super().get_object(queryset)
+        if object.owner == self.request.user:
+            return object
+        else:
+            return PermissionDenied('У вас нет прав на просмотр этой рассылки')
+
 
 class MailingUpdateView(UpdateView):
     '''
@@ -192,7 +246,7 @@ class MailingDeleteView(DeleteView):
         if object.owner == self.request.user:
             return object
         else:
-            return PermissionDenied('У вас нет прав на редактирование этой рассылки')
+            return PermissionDenied('У вас нет прав на удаление этой рассылки')
 
 
 # SingleIbjectMixin позволяет получать объект модели по идентификатору (id)
@@ -297,3 +351,30 @@ class Home(TemplateView):
 
         return context
 
+# 5. Просмотр статистики
+class StatisticsView(TemplateView):
+    model = Mailing
+    template_name = 'dispatcher/statistics.html'
+    context_object_name = 'mailings'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+
+        # Количество всех рассылок, принадлежащих пользователю
+        number_of_mailings = Mailing.objects.filter(owner=user).count()
+        # Количество активных рассылок
+        number_of_active_mailings = Mailing.objects.filter(status=Mailing.LAUNCHED, owner=user).count()
+        # Количество уникальных получателей
+        number_of_unique_recipient = Recipient.objects.filter(owner=user).distinct().count()
+        # Общее количество попыток рассылок
+        number_of_attempts = AttemptToMailing.get_number_of_attempts()
+        # Количество успешных попыток
+        success_attempts = AttemptToMailing.get_success_attempts()
+        # Количество неуспешных попыток
+        unsuccess_attempts = AttemptToMailing.get_unsuccess_attempts()
+        # Количество отправленных сообщений
+        number_of_messages = AttemptToMailing.get_messages_count()
+
+        return context

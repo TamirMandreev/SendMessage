@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, SET_NULL
 
 from users.models import User
 
@@ -18,6 +18,8 @@ class Recipient(models.Model):
     email = models.EmailField(unique=True, verbose_name='Адрес электронной почты')
     full_name = models.CharField(max_length=200, verbose_name='ФИО')
     comment = models.TextField(verbose_name='Комментарий')
+
+    owner = models.ForeignKey(User, on_delete=SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.email
@@ -38,6 +40,7 @@ class Message(models.Model):
     '''
     theme = models.CharField(max_length=200, verbose_name='Тема')
     body = models.TextField(verbose_name='Сообщение')
+    owner = models.ForeignKey(User, on_delete=SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.theme
