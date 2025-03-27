@@ -154,3 +154,12 @@ AUTH_USER_MODEL = 'users.User'
 # URL-адреса, на которые пользователь будет перенаправляться после успешной аутентификации или выхода из учетной записи
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# CACHE_ENABLED - переменная, определяющая включение системы кэширования
+CACHE_ENABLED = True
+if CACHE_ENABLED:
+    # CACHES - словарь настроек для кэшэй
+    CACHES = {
+        'default': {'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+                    'LOCATION': 'redis://127.0.0.1:6379/1'}
+    }

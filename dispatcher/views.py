@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from config.settings import EMAIL_HOST_USER
 from django.shortcuts import render, redirect
@@ -20,6 +22,8 @@ from dispatcher.models import Recipient, Message, Mailing, AttemptToMailing
 # Create your views here.
 # 1. Управление клиентами
 
+# Кэшировать результаты вызова метода dispatch на протяжении 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class RecipientListView(ListView):
     '''
     Представление для отображения всех получателей рассылки (клиентов)
@@ -80,6 +84,8 @@ class RecipientUpdateView(LoginRequiredMixin, UpdateView):
             return PermissionDenied('У вас нет прав на редактирование этого получателя рассылки')
 
 
+# Кэшировать результаты вызова метода dispatch на протяжении 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class RecipientDetailView(DetailView):
     '''
     Представление для просмотра детальной информации о получателе рассылки (клиенте)
@@ -134,7 +140,8 @@ class MessageCreateView(CreateView):
 
 
 
-
+# Кэшировать результаты вызова метода dispatch на протяжении 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class MessageListView(ListView):
     '''
     Представление для отображения всех сообщений
@@ -143,6 +150,9 @@ class MessageListView(ListView):
     template_name = 'dispatcher/messages_list.html'
     context_object_name = 'messages'
 
+
+# Кэшировать результаты вызова метода dispatch на протяжении 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class MessageDetailView(DetailView):
     '''
     Представление для отображения подробной информации о сообщении
@@ -191,6 +201,8 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+# Кэшировать результаты вызова метода dispatch на протяжении 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class MailingListView(ListView):
     '''
     Представление для отображения всех рассылок
@@ -216,8 +228,8 @@ class MailingListView(ListView):
             return redirect(reverse_lazy('users:login'))
 
 
-
-
+# Кэшировать результаты вызова метода dispatch на протяжении 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class MailingDetailView(DetailView):
     '''
     Представление для отображения подробной информации о рассылке
@@ -242,7 +254,6 @@ class MailingUpdateView(UpdateView):
     form_class = MailingForm
     template_name = 'dispatcher/mailing_form.html'
     success_url = reverse_lazy('dispatcher:mailings_list')
-
 
     def get_object(self, queryset=None):
         object = super().get_object(queryset)
