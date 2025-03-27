@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.utils import timezone
@@ -112,7 +114,8 @@ class MessageDeleteView(DeleteView):
 
 
 # 3. Управление рассылками
-class MailingCreateView(CreateView):
+# LoginRequiredMixin предоставляет доступ к этому представлению только авторизованным пользователям
+class MailingCreateView(LoginRequiredMixin, CreateView):
     '''
     Представление для создания рассылки
     '''
@@ -120,6 +123,14 @@ class MailingCreateView(CreateView):
     form_class = MailingForm
     template_name = 'dispatcher/mailing_form.html'
     success_url = reverse_lazy('dispatcher:mailings_list')
+
+    # Метод form_valid вызывается после успешной проверки формы
+    # Этот метод используется для выполнения каких-либо действий перед сохранением формы
+    def form_valid(self, form):
+        # Установить значение поля owner
+        form.instance.owner = self.request.user
+        # Вызвать родительский метод
+        return super().form_valid(form)
 
 
 class MailingListView(ListView):
@@ -129,6 +140,16 @@ class MailingListView(ListView):
     model = Mailing
     template_name = 'dispatcher/mailings_list.html'
     context_object_name = 'mailings'
+
+    # Настроить запрос к базе данных, который будет фильтровать список рассылок по полю owner модели Mailing
+    def get_queryset(self):
+        # Получаем текущего пользователя
+        user = self.request.user
+        # Фильтруем queryset по полю owner
+        queryset = super().get_queryset()
+        return queryset.filter(owner=user)
+
+
 
 
 class MailingDetailView(DetailView):
@@ -150,6 +171,14 @@ class MailingUpdateView(UpdateView):
     success_url = reverse_lazy('dispatcher:mailings_list')
 
 
+    def get_object(self, queryset=None):
+        object = super().get_object(queryset)
+        if object.owner == self.request.user:
+            return object
+        else:
+            return PermissionDenied('У вас нет прав на редактирование этой рассылки')
+
+
 class MailingDeleteView(DeleteView):
     '''
     Представление для удаления рассылки
@@ -157,6 +186,13 @@ class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = 'dispatcher/mailing_delete.html'
     success_url = reverse_lazy('dispatcher:mailings_list')
+
+    def get_object(self, queryset=None):
+        object = super().get_object(queryset)
+        if object.owner == self.request.user:
+            return object
+        else:
+            return PermissionDenied('У вас нет прав на редактирование этой рассылки')
 
 
 # SingleIbjectMixin позволяет получать объект модели по идентификатору (id)

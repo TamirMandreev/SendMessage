@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Sum
 
+from users.models import User
+
 
 # Create your models here.
 
@@ -71,6 +73,9 @@ class Mailing(models.Model):
 
     message = models.ForeignKey(Message, on_delete=models.SET_NULL, related_name='mailings', null=True, blank=True, verbose_name='Сообщение')
     recipients = models.ManyToManyField(Recipient, related_name='recipients')
+
+    # Владелец рассылки
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='mailings', null=True, blank=True)
 
     def get_recipients(self):
         return ', '.join([recipient.email for recipient in self.recipients.all()])
