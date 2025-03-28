@@ -16,6 +16,7 @@ from pathlib import Path
 # в частности для получения значений переменных окружения
 import os
 
+from django.conf.global_settings import MEDIA_URL
 # load_dotenv - функция, которая загружает переменные из файла .env в окружение
 from dotenv import load_dotenv
 
@@ -175,3 +176,7 @@ if CACHE_ENABLED:
             "LOCATION": "redis://127.0.0.1:6379/1",
         }
     }
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
