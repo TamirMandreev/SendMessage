@@ -25,6 +25,7 @@
         <td>
             {% if user.pk %}
             <a href="{% url 'users:user_block' user.pk %}">Заблокировать</a>
+            <a href="{% url 'users:user_detail' user.pk %}">Подробнее</a>
             {% endif %}
         </td>
     </tr>

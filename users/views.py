@@ -9,10 +9,10 @@ from django.core.cache import cache
 from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, FormView, ListView
+from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
 
 from config.settings import EMAIL_HOST_USER
-from users.forms import UserRegisterForm
+from users.forms import UserRegisterForm, UserUpdateForm
 from users.models import User
 
 
@@ -200,7 +200,7 @@ class UsersListView(LoginRequiredMixin, ListView):
         # Получить пользователя, который отправляет запрос
         user = self.request.user
         # Если у пользователя нет права can_view_all_users
-        if not user.has_perm("user.can_view_all_users"):
+        if not user.has_perm("users.can_view_all_users"):
             return HttpResponseForbidden(
                 "У вас нет права на просмотр списка пользователей"
             )
@@ -213,6 +213,28 @@ class UsersListView(LoginRequiredMixin, ListView):
             cache.set("users_queryset", queryset, 60)
 
         return queryset
+
+
+# Создать представление для просмотра детальной информации о пользователе
+class UserDetailView(LoginRequiredMixin, DetailView):
+    # Указать модель, с которой будет работать представление
+    model = User
+    # Указать шаблон, который будет использоваться для отображения детальной информации о пользователе
+    template_name = "users/user_detail.html"
+    # Указать имя контекста
+    context_object_name = "user"
+
+
+# Создать представление для редактирования пользователя
+class UserUpdateView(LoginRequiredMixin, UpdateView):
+    # Указать модель, с которой будет работать представление
+    model = User
+    # Указать шаблон для редактирования пользователя
+    template_name = "users/user_create.html"
+    # Подключить form_class
+    form_class = UserUpdateForm
+    # Перенаправить на список пользователей
+    success_url = reverse_lazy("users:users_list")
 
 
 # Создать представление для блокировки пользователя

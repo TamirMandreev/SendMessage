@@ -38,3 +38,25 @@ class UserAuthForm(AuthenticationForm):
         self.fields["password"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Введите пароль"}
         )
+
+
+# Адаптировать форму регистрации пользователя под кастомную модель пользователя
+class UserUpdateForm(UserCreationForm):
+    class Meta:
+        # Указать модель, на основе которой будет создана форма
+        model = User
+        # Определить поля, которые будут включены в форму регистрации
+        fields = ["email", "image", "phone", 'country']
+
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields["email"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Введите email"}
+        )
+        self.fields["image"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Загрузите изображение"}
+        )
+        self.fields["phone"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Введите телефон"}
+        )
+        self.fields["country"].widget.attrs.update({"class": "form-control", "placeholder": "Введите страну"})
