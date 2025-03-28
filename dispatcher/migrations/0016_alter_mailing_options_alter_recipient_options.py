@@ -6,16 +6,30 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dispatcher', '0015_attempttomailing_owner'),
+        ("dispatcher", "0015_attempttomailing_owner"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mailing',
-            options={'permissions': [('can_disable_mailings', 'Can disable mailings'), ('can_view_all_mailings', 'Can view all mailings')], 'verbose_name': 'Рассылка', 'verbose_name_plural': 'Рассылки'},
+            name="mailing",
+            options={
+                "permissions": [
+                    ("can_disable_mailings", "Can disable mailings"),
+                    ("can_view_all_mailings", "Can view all mailings"),
+                ],
+                "verbose_name": "Рассылка",
+                "verbose_name_plural": "Рассылки",
+            },
         ),
         migrations.AlterModelOptions(
-            name='recipient',
-            options={'ordering': ['email'], 'permissions': [('can_view_all_clients', 'Can view all clients')], 'verbose_name': 'Получатель рассылки', 'verbose_name_plural': 'Получатели рассылки'},
+            name="recipient",
+            options={
+                "ordering": ["email"],
+                "permissions": [
+                    ("can_view_all_clients", "Can view all clients")
+                ],
+                "verbose_name": "Получатель рассылки",
+                "verbose_name_plural": "Получатели рассылки",
+            },
         ),
     ]

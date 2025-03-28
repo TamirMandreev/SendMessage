@@ -7,19 +7,59 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dispatcher', '0002_message'),
+        ("dispatcher", "0002_message"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Mailing',
+            name="Mailing",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_time_of_first_mailing', models.DateTimeField(blank=True, null=True)),
-                ('date_time_end_mailing', models.DateField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('1', 'Создана'), ('2', 'Активна'), ('2', 'Завершена')], default='1', max_length=6, verbose_name='Статус')),
-                ('message', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='mailings', to='dispatcher.message')),
-                ('recipients', models.ManyToManyField(related_name='recipients', to='dispatcher.recipient')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "date_time_of_first_mailing",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                (
+                    "date_time_end_mailing",
+                    models.DateField(blank=True, null=True),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("1", "Создана"),
+                            ("2", "Активна"),
+                            ("2", "Завершена"),
+                        ],
+                        default="1",
+                        max_length=6,
+                        verbose_name="Статус",
+                    ),
+                ),
+                (
+                    "message",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="mailings",
+                        to="dispatcher.message",
+                    ),
+                ),
+                (
+                    "recipients",
+                    models.ManyToManyField(
+                        related_name="recipients", to="dispatcher.recipient"
+                    ),
+                ),
             ],
         ),
     ]

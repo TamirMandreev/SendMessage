@@ -6,17 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dispatcher', '0010_attempttomailing_sent_messages_count'),
+        ("dispatcher", "0010_attempttomailing_sent_messages_count"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='attempttomailing',
-            name='sent_messages_count',
+            model_name="attempttomailing",
+            name="sent_messages_count",
         ),
         migrations.AddField(
-            model_name='attempttomailing',
-            name='messages_count',
-            field=models.PositiveIntegerField(blank=True, default=0, null=True),
+            model_name="attempttomailing",
+            name="messages_count",
+            field=models.PositiveIntegerField(
+                blank=True, default=0, null=True
+            ),
         ),
     ]

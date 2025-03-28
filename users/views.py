@@ -4,11 +4,10 @@ import secrets
 from django.contrib.auth import login
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.core.cache import cache
 from django.http import Http404, HttpResponseForbidden, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, FormView, ListView
 
@@ -17,21 +16,23 @@ from users.forms import UserRegisterForm
 from users.models import User
 
 
-# Create your views here.
-
 # Создать представление для создания пользователя (Объекта модели User)
 class UserCreateView(CreateView):
     # Указать модель, с которой будет работать представлением
     model = User
-    # Указать шаблон, который будет использоваться для отображения формы
-    template_name = 'users/user_create.html'
+    # Указать шаблон, который будет использоваться для отображения
+    # формы
+    template_name = "users/user_create.html"
     # Интегрировать (подключить) form_class
     form_class = UserRegisterForm
-    # Определить URL-адрес, на который будет перенаправлен пользователь после успешной отправки формы
-    success_url = reverse_lazy('users:login')
+    # Определить URL-адрес, на который будет перенаправлен
+    # пользователь после успешной отправки формы
+    success_url = reverse_lazy("users:login")
 
-    # Метод form_valid вызывается после успешного заполнения формы регистрации.
-    # В нем мы выполняем дополнительные действия перед сохранением нового пользователя
+    # Метод form_valid вызывается после успешного заполнения формы
+    # регистрации.
+    # В нем мы выполняем дополнительные действия перед сохранением
+    # нового пользователя
     def form_valid(self, form):
         # Сохранить данные формы. Создается новый экземпляр модели User
         user = form.save(commit=False)
@@ -47,15 +48,17 @@ class UserCreateView(CreateView):
         # Получить полное доменное имя (хостнейм)
         host = self.request.get_host()
         # Создать ссылку для подтверждения почты
-        url = f'http://{host}/users/email-confirm/{token}/'
+        url = f"http://{host}/users/email-confirm/{token}/"
 
         # Отправить письмо для подтверждения почты
-        # Функция send_mail используется для отправки электронного письма через SMTP-сервер
+        # Функция send_mail используется для отправки электронного
+        # письма через SMTP-сервер
         send_mail(
-            subject='Подтверждение почты', # Заголовок письма
-            message=f'Привет, перейди по ссылке для подтверждения почты {url}', # Заголовок письма
-            from_email=EMAIL_HOST_USER, # Адрес отправителя
-            recipient_list=[user.email], # Список получателей
+            subject="Подтверждение почты",  # Заголовок письма
+            # Тело письма
+            message=f"Привет, перейди по ссылке для подтверждения почты {url}",
+            from_email=EMAIL_HOST_USER,  # Адрес отправителя
+            recipient_list=[user.email],  # Список получателей
         )
 
         # Вернуть результат работы базовой реализации метода form_valid
@@ -72,24 +75,30 @@ def email_verifivation(request, token):
     user.save()
 
     # Перенаправить пользователя на страницу входа
-    return redirect(reverse('users:login'))
+    return redirect(reverse("users:login"))
 
 
 # Создать представление для обработки запросов на восстановление пароля
-# Его цель - предоставить пользователю форму для ввода своего email-адреса,
-# проверить наличиего этого email-адреса в базе данных и отправить пользователю
+# Его цель - предоставить пользователю форму для ввода своего
+# email-адреса,
+# проверить наличиего этого email-адреса в базе данных
+# и отправить пользователю
 # письмо с инструкциями по сбросу пароля
 class PasswordResetRequestView(FormView):
-    # Указать шаблон, который будет использоваться для отображения формы
-    template_name = 'users/password_reset_request.html'
+    # Указать шаблон, который будет использоваться для о
+    # тображения формы
+    template_name = "users/password_reset_request.html"
     # Интегрировать (подключить) form_class
     form_class = PasswordResetForm
-    # Определить URL-адрес, на который будет перенаправлен пользователь после успешной отправки формы
-    success_url = reverse_lazy('users:password_reset_confirm')
+    # Определить URL-адрес, на который будет перенаправлен
+    # пользователь после успешной отправки формы
+    success_url = reverse_lazy("users:password_reset_confirm")
 
-    # Метод form_valid вызывается, когда форма успешно прошла валидацию (то есть пользователь ввел корректный email-адрес)р
+    # Метод form_valid вызывается, когда форма успешно
+    # прошла валидацию (то есть пользователь ввел корректный
+    # email-адрес)
     def form_valid(self, form):
-        email = form.cleaned_data['email']
+        email = form.cleaned_data["email"]
 
         # Проверяем, существует ли пользователь с таким email
         if User.objects.filter(email=email).exists():
@@ -102,12 +111,17 @@ class PasswordResetRequestView(FormView):
 
             # Формируем ссылку для сброса пароля
             host = self.request.get_host()
-            password_reset_link = f'http://{host}/password-reset/{reset_token}/'
+            password_reset_link = (
+                f"http://{host}/password-reset/{reset_token}/"
+            )
 
             # Отправляем электронное письмо
             send_mail(
-                subject='Запрос на восстановление пароля',
-                message=f'Вы получили это письмо, потому что запросили восстановление пароля. Пожалуйста, пройдите по следующей ссылке для завершения процесса: {password_reset_link}',
+                subject="Запрос на восстановление пароля",
+                message=f"Вы получили это письмо, потому что запросили "
+                        f"восстановление пароля. Пожалуйста, пройдите по "
+                        f"следующей ссылке для завершения процесса:"
+                        f" {password_reset_link}",
                 from_email=EMAIL_HOST_USER,
                 recipient_list=[email],
             )
@@ -117,34 +131,40 @@ class PasswordResetRequestView(FormView):
 
 # Создать представление для сброса пароля
 class PasswordResetView(FormView):
-    # Указать шаблон, который будет использоваться для отображения формы
-    template_name = 'users/password_reset.html'
+    # Указать шаблон, который будет использоваться
+    # для отображения формы
+    template_name = "users/password_reset.html"
     # Интегировать (подключить) form_class
     form_class = SetPasswordForm
-    # Определить URL-адрес, на который будет перенаправлен пользователь после сброса пароля
-    success_url = reverse_lazy('users:home')
+    # Определить URL-адрес, на который будет перенаправлен
+    # пользователь после сброса пароля
+    success_url = reverse_lazy("users:home")
 
-    # Метод dispatch вызывается перед каждым запросом к представлению
-    # Его цель - опеределить, какой пользователь запрашивает сброс пароля, и проверить валидность токена
+    # Метод dispatch вызывается перед каждым запросом к
+    # представлению
+    # Его цель - опеределить, какой пользователь запрашивает
+    # сброс пароля, и проверить валидность токена
     def dispatch(self, request, *args, **kwargs):
         # Получить токен для сброса пароля
-        reset_token = kwargs.get('reset_token')
+        reset_token = kwargs.get("reset_token")
         try:
             # Найти пользователя по токену
             user = User.objects.get(reset_token=reset_token)
         except User.DoesNotExist:
-            raise Http404('Недействительный токен')
+            raise Http404("Недействительный токен")
 
-        # Сохранить пользователя в переменной экземпляра, чтобы его можно было передать в форму
+        # Сохранить пользователя в переменной экземпляра,
+        # чтобы его можно было передать в форму
         self.user = user
         return super().dispatch(request, *args, **kwargs)
 
-    # Метод get_form_kwargs используется для передачи дополнительных аргументов в конструктор формы
+    # Метод get_form_kwargs используется для передачи
+    # дополнительных аргументов в конструктор формы
     def get_form_kwargs(self):
         # Получить базовые аргументы из родительского класса
         kwargs = super().get_form_kwargs()
         # Добавить к полученным аргументам текущего пользователя
-        kwargs['user'] = self.user
+        kwargs["user"] = self.user
         # Вернуть объединенные аргументы
         return kwargs
 
@@ -156,7 +176,9 @@ class PasswordResetView(FormView):
         del self.user.reset_token
         # Сохранить обновленные данные
         self.user.save()
-        # Метод login из пакета django.contrib.auth используется для автоматической авторизации пользователя сразу после успешного восстановления пароля
+        # Метод login из пакета django.contrib.auth используется
+        # для автоматической авторизации пользователя сразу после
+        # успешного восстановления пароля
         login(self.request, self.user)
         # Вызвать родительский метод
         return super().form_valid(form)
@@ -166,39 +188,43 @@ class PasswordResetView(FormView):
 class UsersListView(LoginRequiredMixin, ListView):
     # Указать модель, с которой будет работать представление
     model = User
-    # Указать шаблон, который будет использоваться для отображения списка пользователей
-    template_name = 'users/users_list.html'
-    # Задать имя переменной, под которой список объектов будет доступен в шаблоне
-    context_object_name = 'users'
+    # Указать шаблон, который будет использоваться для о
+    # тображения списка пользователей
+    template_name = "users/users_list.html"
+    # Задать имя переменной, под которой список объектов
+    # будет доступен в шаблоне
+    context_object_name = "users"
 
     # Настроить запрос получения списка пользователей к базе данных
     def get_queryset(self):
         # Получить пользователя, который отправляет запрос
         user = self.request.user
         # Если у пользователя нет права can_view_all_users
-        if not user.has_perm('user.can_view_all_users'):
-            return HttpResponseForbidden('У вас нет права на просмотр списка пользователей')
+        if not user.has_perm("user.can_view_all_users"):
+            return HttpResponseForbidden(
+                "У вас нет права на просмотр списка пользователей"
+            )
 
         # Получить queryset из кэша
-        queryset = cache.get('users_queryset')
+        queryset = cache.get("users_queryset")
         # Если queryset пуст
         if queryset is None:
             queryset = User.objects.all()
-            cache.set('users_queryset', queryset, 60)
+            cache.set("users_queryset", queryset, 60)
 
         return queryset
+
 
 # Создать представление для блокировки пользователя
 def block_user(request, pk):
     # Получить пользователя
     user = get_object_or_404(User, pk=pk)
     # Если пользователь имеет право can_block_users
-    if user.has_perm('user.can_block_users'):
+    if user.has_perm("user.can_block_users"):
         # Установить поле is_active=False
         user.is_active = False
         # Сохранить пользователя
         user.save()
-        return HttpResponse('Пользователь заблокирован')
+        return HttpResponse("Пользователь заблокирован")
     else:
-        return HttpResponse('У вас нет права на блокировку пользователя')
-
+        return HttpResponse("У вас нет права на блокировку пользователя")

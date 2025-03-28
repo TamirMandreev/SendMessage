@@ -4,9 +4,11 @@ from django.contrib.auth.models import Group
 
 from users.models import User
 
+
 # Создать команду для создания менеджера
 class Command(BaseCommand):
-    # Метод handle является основным методом, который выполняется при запуске команды
+    # Метод handle является основным методом, который выполняется
+    # при запуске команды
     def handle(self, *args, **options):
         # Запросить у пользователя email
         email = input("Email: ")
@@ -26,7 +28,7 @@ class Command(BaseCommand):
             user.is_staff = True
 
             # Добавить пользователя в группу "Менеджеры"
-            user.groups.add(Group.objects.get(name='Менеджеры'))
+            user.groups.add(Group.objects.get(name="Менеджеры"))
 
             # Сохранить пользователя
             user.save()

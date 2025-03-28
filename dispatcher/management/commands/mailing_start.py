@@ -8,20 +8,20 @@ from dispatcher.models import Mailing
 
 # Создать кастомную команду для отправки рассылки
 class Command(BaseCommand):
-    '''
+    """
     Команда запускает рассылку по идентификатору
 
     python3 manage.py mailing_start mailing.id
-    '''
+    """
 
     # Добавить обязательный аргумент mailing_id в командную строку
     def add_arguments(self, parser):
-        parser.add_argument('mailing_id', type=int, help='Mailing ID')
+        parser.add_argument("mailing_id", type=int, help="Mailing ID")
 
     # Прописать основную логику команды
     def handle(self, *args, **options):
         # Получить аргумент mailing_id из словаря options
-        mailing_id = options['mailing_id']
+        mailing_id = options["mailing_id"]
         # Получить объект модели Mailing
         mailing = get_object_or_404(Mailing, id=mailing_id)
 
@@ -34,12 +34,14 @@ class Command(BaseCommand):
         mailing.save()
 
         from django.core.mail import send_mail
+
         # Отправить сообщения
         send_mail(
             subject=mailing.message.theme,  # Тема письма
             message=mailing.message.body,  # Тело письма
             from_email=EMAIL_HOST_USER,  # Адрес отправителя
-            recipient_list=mailing.get_recipients_for_mailing()  # Список получателей
+            # Список получателей
+            recipient_list=mailing.get_recipients_for_mailing(),
         )
 
         # Записать дату и время окончания отправки
@@ -50,4 +52,8 @@ class Command(BaseCommand):
         mailing.save()
 
         # Вывести в консоль сообщение о завершении отправки рассылки
-        self.stdout.write(self.style.SUCCESS(f'Рассылка с идентификатором {mailing_id} успешно отправлена'))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Рассылка с идентификатором {mailing_id} успешно отправлена"
+            )
+        )

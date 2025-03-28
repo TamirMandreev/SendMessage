@@ -6,16 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dispatcher', '0006_alter_mailing_options_alter_mailing_table'),
+        ("dispatcher", "0006_alter_mailing_options_alter_mailing_table"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='message',
-            options={'verbose_name': 'Сообщение', 'verbose_name_plural': 'Сообщения'},
+            name="message",
+            options={
+                "verbose_name": "Сообщение",
+                "verbose_name_plural": "Сообщения",
+            },
         ),
         migrations.AlterModelTable(
-            name='message',
-            table='Сообщения',
+            name="message",
+            table="Сообщения",
         ),
     ]

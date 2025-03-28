@@ -6,16 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dispatcher', '0005_alter_mailing_date_time_end_mailing_and_more'),
+        ("dispatcher", "0005_alter_mailing_date_time_end_mailing_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mailing',
-            options={'verbose_name': 'Рассылка', 'verbose_name_plural': 'Рассылки'},
+            name="mailing",
+            options={
+                "verbose_name": "Рассылка",
+                "verbose_name_plural": "Рассылки",
+            },
         ),
         migrations.AlterModelTable(
-            name='mailing',
-            table='Рассылки',
+            name="mailing",
+            table="Рассылки",
         ),
     ]

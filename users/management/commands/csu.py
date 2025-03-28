@@ -3,14 +3,16 @@ from django.core.management import BaseCommand
 
 from users.models import User
 
+
 # Создать команду для создания суперпользователя
 class Command(BaseCommand):
-    # Метод handle является основным методом, который выполняется при запуске команды
+    # Метод handle является основным методом, который
+    # выполняется при запуске команды
     def handle(self, *args, **options):
         # Создать объект пользователя
-        user = User.objects.create(email='tamirmandreev@example.com')
+        user = User.objects.create(email="tamirmandreev@example.com")
         # Установить пароль
-        user.set_password('1234')
+        user.set_password("1234")
         # Активировать пользователя
         user.is_active = True
         # Назначить права администратора

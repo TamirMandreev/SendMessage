@@ -7,23 +7,40 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Recipient',
+            name="Recipient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254, unique=True, verbose_name='Адрес электронной почты')),
-                ('full_name', models.CharField(max_length=200, verbose_name='ФИО')),
-                ('comment', models.TextField(verbose_name='Комментарий')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        max_length=254,
+                        unique=True,
+                        verbose_name="Адрес электронной почты",
+                    ),
+                ),
+                (
+                    "full_name",
+                    models.CharField(max_length=200, verbose_name="ФИО"),
+                ),
+                ("comment", models.TextField(verbose_name="Комментарий")),
             ],
             options={
-                'verbose_name': 'Получатель рассылки',
-                'verbose_name_plural': 'Получатели рассылки',
-                'db_table': 'Получатели рассылки',
-                'ordering': ['email'],
+                "verbose_name": "Получатель рассылки",
+                "verbose_name_plural": "Получатели рассылки",
+                "db_table": "Получатели рассылки",
+                "ordering": ["email"],
             },
         ),
     ]
