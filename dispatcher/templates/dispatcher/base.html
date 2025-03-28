@@ -19,13 +19,15 @@
             </a>
         </div>
 
+        {% if user.is_authenticated %}
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
             <li><a href="{% url 'dispatcher:home' %}" class="nav-link px-2 link-secondary">Главная</a></li>
             <li><a href="{% url 'dispatcher:recipients_list' %}" class="nav-link px-2">Клиенты</a></li>
             <li><a href="{% url 'dispatcher:messages_list' %}" class="nav-link px-2">Сообщения</a></li>
             <li><a href="{% url 'dispatcher:mailings_list' %}" class="nav-link px-2">Рассылки</a></li>
-            <li><a href="#" class="nav-link px-2">About</a></li>
+            <li><a href="{% url 'dispatcher:attempt_list' %}" class="nav-link px-2">Попытки рассылок</a></li>
         </ul>
+        {% endif %}
 
         <div class="col-md-3 text-end">
             {% if not user.is_authenticated %}
@@ -37,6 +39,8 @@
             {% endif %}
         </div>
     </header>
+
+    <h4>Добро пожаловать, {{ user.email }}</h4>
 
     <div class="row mt-5">
 

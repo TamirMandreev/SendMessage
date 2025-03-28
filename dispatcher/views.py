@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.db.models import Sum
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -277,10 +277,13 @@ class MailingDetailView(DetailView):
 
     def get_object(self, queryset=None):
         object = super().get_object(queryset)
-        if object.owner == self.request.user:
+        user = self.request.user
+        if object.owner == self.request.user or user.has_perm(
+            "dispatcher.can_view_all_mailings"
+        ):
             return object
         else:
-            return PermissionDenied("У вас нет прав на просмотр этой рассылки")
+            return HttpResponse("У вас нет прав на просмотр этой рассылки")
 
 
 class MailingUpdateView(UpdateView):
@@ -295,10 +298,13 @@ class MailingUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         object = super().get_object(queryset)
-        if object.owner == self.request.user:
+        user = self.request.user
+        if object.owner == self.request.user or user.has_perm(
+            "dispatcher.can_view_all_mailings"
+        ):
             return object
         else:
-            return PermissionDenied(
+            return HttpResponse(
                 "У вас нет прав на редактирование этой рассылки"
             )
 
@@ -317,7 +323,7 @@ class MailingDeleteView(DeleteView):
         if object.owner == self.request.user:
             return object
         else:
-            return PermissionDenied("У вас нет прав на удаление этой рассылки")
+            raise PermissionDenied("У вас нет прав на удаление этой рассылки")
 
 
 # SingleIbjectMixin позволяет получать объект модели
@@ -454,3 +460,14 @@ class Home(TemplateView):
 
         except TypeError:
             redirect(reverse_lazy("users:login"))
+
+
+# Создать представление для отображения списка попыток рассылок
+class AttemptToMailingListView(ListView):
+    # Указать модель, с которой будет работать представление
+    model = AttemptToMailing
+    # Указать шаблон, который будет отображать список попыток рассылок
+    template_name = "dispatcher/attemt_to_mailing_list.html"
+    # Задать имя переменной, под которой список объектов будет
+    # доступен в шаблоне
+    context_object_name = "attempt_to_mailings"

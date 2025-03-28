@@ -9,7 +9,13 @@ from django.core.cache import cache
 from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
+from django.views.generic import (
+    CreateView,
+    FormView,
+    ListView,
+    DetailView,
+    UpdateView,
+)
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm, UserUpdateForm
@@ -119,9 +125,9 @@ class PasswordResetRequestView(FormView):
             send_mail(
                 subject="Запрос на восстановление пароля",
                 message=f"Вы получили это письмо, потому что запросили "
-                        f"восстановление пароля. Пожалуйста, пройдите по "
-                        f"следующей ссылке для завершения процесса:"
-                        f" {password_reset_link}",
+                f"восстановление пароля. Пожалуйста, пройдите по "
+                f"следующей ссылке для завершения процесса:"
+                f" {password_reset_link}",
                 from_email=EMAIL_HOST_USER,
                 recipient_list=[email],
             )
@@ -219,7 +225,8 @@ class UsersListView(LoginRequiredMixin, ListView):
 class UserDetailView(LoginRequiredMixin, DetailView):
     # Указать модель, с которой будет работать представление
     model = User
-    # Указать шаблон, который будет использоваться для отображения детальной информации о пользователе
+    # Указать шаблон, который будет использоваться для отображения
+    # детальной информации о пользователе
     template_name = "users/user_detail.html"
     # Указать имя контекста
     context_object_name = "user"

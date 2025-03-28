@@ -11,11 +11,17 @@ class User(AbstractUser):
     # Использовать email как уникальный идентификатор
     email = models.EmailField(unique=True, verbose_name="Email")
     # Аватар
-    image = models.ImageField(upload_to="users/photo", verbose_name="Аватар", blank=True, null=True)
+    image = models.ImageField(
+        upload_to="users/photo", verbose_name="Аватар", blank=True, null=True
+    )
     # Телефон
-    phone = models.CharField(max_length=35, blank=True, null=True, verbose_name='Телефон')
+    phone = models.CharField(
+        max_length=35, blank=True, null=True, verbose_name="Телефон"
+    )
     # Страна
-    country = models.CharField(max_length=255, blank=True, null=True, verbose_name='Страна')
+    country = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name="Страна"
+    )
     # Токен нужен для подтверждения учетной записи по электронной почте
     token = models.CharField(
         max_length=100, verbose_name="Token", blank=True, null=True

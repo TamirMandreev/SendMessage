@@ -1,0 +1,39 @@
+{% extends 'dispatcher/base.html' %}
+
+{% block title %}<title>Список рассылок</title>{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-2">
+        <a class="btn btn-outline-primary" href="{% url 'dispatcher:mailing_create' %}" role="button">Добавить рассылку</a>
+    </div>
+</div>
+
+
+<table class="table table-hover align-middle">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Дата и время попытки</th>
+        <th scope="col">Статус</th>
+        <th scope="col">Ответ почтового сервера</th>
+        <th scope="col">Рассылка</th>
+        <th scope="col">Количество отправленных сообщений</th>
+        <th scope="col">Владелец</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for attempt in attempt_to_mailings %}
+    <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ attempt.date_time_of_attempt }}</td>
+        <td>{{ attempt.status }}</td>
+        <td>{{ attempt.mail_server_response }}</td>
+        <td>{{ attempt.mailing }}</td>
+        <td>{{ attempt.messages_count }}</td>
+        <td>{{ attempt.owner }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

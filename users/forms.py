@@ -46,7 +46,7 @@ class UserUpdateForm(UserCreationForm):
         # Указать модель, на основе которой будет создана форма
         model = User
         # Определить поля, которые будут включены в форму регистрации
-        fields = ["email", "image", "phone", 'country']
+        fields = ["email", "image", "phone", "country"]
 
     def __init__(self, *args, **kwargs):
         super(UserUpdateForm, self).__init__(*args, **kwargs)
@@ -59,4 +59,6 @@ class UserUpdateForm(UserCreationForm):
         self.fields["phone"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Введите телефон"}
         )
-        self.fields["country"].widget.attrs.update({"class": "form-control", "placeholder": "Введите страну"})
+        self.fields["country"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Введите страну"}
+        )

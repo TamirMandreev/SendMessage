@@ -2,6 +2,7 @@ from django.urls import path
 
 from dispatcher import views
 from dispatcher.apps import DispatcherConfig
+from dispatcher.views import AttemptToMailingListView
 
 # Задать имя приложения в пространстве имен (namespace)
 app_name = DispatcherConfig.name
@@ -84,4 +85,9 @@ urlpatterns = [
         name="start_mailing",
     ),
     path("", views.Home.as_view(), name="home"),
+    path(
+        "attempt/list/",
+        AttemptToMailingListView.as_view(),
+        name="attempt_list",
+    ),
 ]

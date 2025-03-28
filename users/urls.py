@@ -31,7 +31,11 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("list/", views.UsersListView.as_view(), name="users_list"),
-    path("detail/<int:pk>", views.UserDetailView.as_view(), name="user_detail"),
-    path("update/<int:pk>", views.UserUpdateView.as_view(), name="user_update"),
+    path(
+        "detail/<int:pk>", views.UserDetailView.as_view(), name="user_detail"
+    ),
+    path(
+        "update/<int:pk>", views.UserUpdateView.as_view(), name="user_update"
+    ),
     path("block/<int:pk>", views.block_user, name="user_block"),
 ]

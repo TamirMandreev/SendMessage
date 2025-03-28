@@ -16,7 +16,6 @@ from pathlib import Path
 # в частности для получения значений переменных окружения
 import os
 
-from django.conf.global_settings import MEDIA_URL
 # load_dotenv - функция, которая загружает переменные из файла .env в окружение
 from dotenv import load_dotenv
 
@@ -107,19 +106,19 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation."
-                "UserAttributeSimilarityValidator",
+        "UserAttributeSimilarityValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation."
-                "MinimumLengthValidator",
+        "MinimumLengthValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation."
-                "CommonPasswordValidator",
+        "CommonPasswordValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation."
-                "NumericPasswordValidator",
+        "NumericPasswordValidator",
     },
 ]
 
@@ -177,6 +176,6 @@ if CACHE_ENABLED:
         }
     }
 
-MEDIA_URL = 'media/'
+MEDIA_URL = "media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
