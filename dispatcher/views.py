@@ -174,6 +174,15 @@ class MessageListView(ListView):
     template_name = "dispatcher/messages_list.html"
     context_object_name = "messages"
 
+    def get_queryset(self):
+        # Получаем текущего пользователя
+        user = self.request.user
+        # Получаем все сообщения
+        queryset = super().get_queryset()
+        # Фильтруем queryset по полю owner
+        return queryset.filter(owner=user)
+
+
 
 # Кэшировать результаты вызова метода dispatch на протяжении
 # 60 секунд

@@ -5,7 +5,7 @@ from dispatcher.models import Recipient, Message, Mailing
 class RecipientForm(ModelForm):
     class Meta:
         model = Recipient
-        fields = "__all__"
+        exclude = ['owner']
 
     def __init__(self, *args, **kwargs):
         super(RecipientForm, self).__init__(*args, **kwargs)
@@ -23,7 +23,7 @@ class RecipientForm(ModelForm):
 class MessageForm(ModelForm):
     class Meta:
         model = Message
-        fields = "__all__"
+        exclude = ['owner']
 
     def __init__(self, *args, **kwargs):
         super(MessageForm, self).__init__(*args, **kwargs)
@@ -39,9 +39,8 @@ class MailingForm(ModelForm):
     class Meta:
         model = Mailing
         exclude = [
-            "date_time_of_first_mailing",
-            "date_time_end_mailing",
             "status",
+            "owner"
         ]
 
     def __init__(self, *args, **kwargs):
