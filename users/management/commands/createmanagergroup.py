@@ -10,19 +10,11 @@ class Command(BaseCommand):
         # Создать группу "Менеджеры"
         managers_group = Group.objects.create(name="Менеджеры")
         # Получить разрешения необходимые для группы разрешения
-        can_disable_mailings = Permission.objects.get(
-            codename="can_disable_mailings"
-        )
-        can_view_all_mailings = Permission.objects.get(
-            codename="can_view_all_mailings"
-        )
-        can_view_all_clients = Permission.objects.get(
-            codename="can_view_all_clients"
-        )
+        can_disable_mailings = Permission.objects.get(codename="can_disable_mailings")
+        can_view_all_mailings = Permission.objects.get(codename="can_view_all_mailings")
+        can_view_all_clients = Permission.objects.get(codename="can_view_all_clients")
         can_block_users = Permission.objects.get(codename="can_block_users")
-        can_view_all_users = Permission.objects.get(
-            codename="can_view_all_users"
-        )
+        can_view_all_users = Permission.objects.get(codename="can_view_all_users")
 
         # Добавить полученные разрешения группе "Менеджеры"
         managers_group.permissions.add(

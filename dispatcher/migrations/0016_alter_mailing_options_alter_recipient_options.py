@@ -25,9 +25,7 @@ class Migration(migrations.Migration):
             name="recipient",
             options={
                 "ordering": ["email"],
-                "permissions": [
-                    ("can_view_all_clients", "Can view all clients")
-                ],
+                "permissions": [("can_view_all_clients", "Can view all clients")],
                 "verbose_name": "Получатель рассылки",
                 "verbose_name_plural": "Получатели рассылки",
             },

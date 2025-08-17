@@ -38,9 +38,7 @@ urlpatterns = [
         views.MessageCreateView.as_view(),
         name="message_create",
     ),
-    path(
-        "message/list/", views.MessageListView.as_view(), name="messages_list"
-    ),
+    path("message/list/", views.MessageListView.as_view(), name="messages_list"),
     path(
         "message/detail/<int:pk>/",
         views.MessageDetailView.as_view(),
@@ -61,9 +59,7 @@ urlpatterns = [
         views.MailingCreateView.as_view(),
         name="mailing_create",
     ),
-    path(
-        "mailing/list/", views.MailingListView.as_view(), name="mailings_list"
-    ),
+    path("mailing/list/", views.MailingListView.as_view(), name="mailings_list"),
     path(
         "mailing/detail/<int:pk>/",
         views.MailingDetailView.as_view(),

@@ -183,7 +183,6 @@ class MessageListView(ListView):
         return queryset.filter(owner=user)
 
 
-
 # Кэшировать результаты вызова метода dispatch на протяжении
 # 60 секунд
 @method_decorator(cache_page(60), name="dispatch")
@@ -313,9 +312,7 @@ class MailingUpdateView(UpdateView):
         ):
             return object
         else:
-            return HttpResponse(
-                "У вас нет прав на редактирование этой рассылки"
-            )
+            return HttpResponse("У вас нет прав на редактирование этой рассылки")
 
 
 class MailingDeleteView(DeleteView):
@@ -409,9 +406,7 @@ class MailingStartView(TemplateView, SingleObjectMixin):
         # После успешной отправки письма перенаправить пользователя
         # обратно на страницу подробной информации о рассылке
         return HttpResponseRedirect(
-            reverse_lazy(
-                "dispatcher:mailing_detail", kwargs={"pk": mailing.pk}
-            )
+            reverse_lazy("dispatcher:mailing_detail", kwargs={"pk": mailing.pk})
         )
 
 

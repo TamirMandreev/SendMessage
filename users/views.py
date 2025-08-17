@@ -117,9 +117,7 @@ class PasswordResetRequestView(FormView):
 
             # Формируем ссылку для сброса пароля
             host = self.request.get_host()
-            password_reset_link = (
-                f"http://{host}/password-reset/{reset_token}/"
-            )
+            password_reset_link = f"http://{host}/password-reset/{reset_token}/"
 
             # Отправляем электронное письмо
             send_mail(

@@ -16,9 +16,7 @@ class Recipient(models.Model):
     Ф.И.О., комментарий
     """
 
-    email = models.EmailField(
-        unique=True, verbose_name="Адрес электронной почты"
-    )
+    email = models.EmailField(unique=True, verbose_name="Адрес электронной почты")
     full_name = models.CharField(max_length=200, verbose_name="ФИО")
     comment = models.TextField(verbose_name="Комментарий")
 
@@ -115,9 +113,7 @@ class Mailing(models.Model):
     )
 
     def get_recipients(self):
-        return ", ".join(
-            [recipient.email for recipient in self.recipients.all()]
-        )
+        return ", ".join([recipient.email for recipient in self.recipients.all()])
 
     def get_recipients_for_mailing(self):
         return [recipient.email for recipient in self.recipients.all()]
@@ -177,9 +173,7 @@ class AttemptToMailing(models.Model):
     )
 
     # Счетчик отправленных сообщений
-    messages_count = models.PositiveIntegerField(
-        null=True, blank=True, default=0
-    )
+    messages_count = models.PositiveIntegerField(null=True, blank=True, default=0)
 
     owner = models.ForeignKey(
         User,

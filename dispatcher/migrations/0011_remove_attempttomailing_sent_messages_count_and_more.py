@@ -17,8 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="attempttomailing",
             name="messages_count",
-            field=models.PositiveIntegerField(
-                blank=True, default=0, null=True
-            ),
+            field=models.PositiveIntegerField(blank=True, default=0, null=True),
         ),
     ]
